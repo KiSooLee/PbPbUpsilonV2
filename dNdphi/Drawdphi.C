@@ -8,8 +8,8 @@
 #include <TString.h>
 #include <iostream>
 #include <TMath.h>
-#include "Upsilon.h"
-#include "Style_Kisoo.h"
+#include "../Upsilon.h"
+#include "../Style_Kisoo.h"
 //}}}
 
 void Drawdphi(Int_t iVar = 3, const Int_t ndphi = 3, TString version = "v1")
@@ -33,7 +33,7 @@ void Drawdphi(Int_t iVar = 3, const Int_t ndphi = 3, TString version = "v1")
 		for(Int_t idphi = 0; idphi < ndphi; idphi++)
 		{
 //Get Yield{{{
-			fin[iarr][idphi] = new TFile(Form("GetYield/Yield_%s_%dbin_%dth_%dndphi_%dth_dphi_%s.root", VarName[iVar].Data(), narr-1, iarr, ndphi, idphi, version.Data()), "READ");
+			fin[iarr][idphi] = new TFile(Form("../GetYield/Yield_%s_%dbin_%dth_%dndphi_%dth_dphi_%s.root", VarName[iVar].Data(), narr-1, iarr, ndphi, idphi, version.Data()), "READ");
 			hYield[iarr][idphi] = (TH1D*) fin[iarr][idphi]->Get("hYield");
 			for(Int_t iS = 0; iS < 3; iS++)
 			{

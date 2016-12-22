@@ -6,8 +6,8 @@
 #include <TF1.h>
 #include <TString.h>
 #include <iostream>
-#include "Upsilon.h"
-#include "Style_Kisoo.h"
+#include "../Upsilon.h"
+#include "../Style_Kisoo.h"
 //}}}
 
 void DrawV2(Int_t iVar = 0, TString version = "v1")
@@ -42,8 +42,8 @@ void DrawV2(Int_t iVar = 0, TString version = "v1")
 	}
 //}}}
 
-	TFile* fin = new TFile(Form("../dNdphi/dphi_fit_%s_%dbin_v2.root", VarName[iVar].Data(), narr-1), "READ");
-	TFile* fout = new TFile(Form("V2_distribution_%s_%dbin_v2.root", VarName[iVar].Data(), narr-1), "RECREATE");
+	TFile* fin = new TFile(Form("../dNdphi/dphi_fit_%s_%dbin_%s.root", VarName[iVar].Data(), narr-1, version.Data()), "READ");
+	TFile* fout = new TFile(Form("V2_distribution_%s_%dbin_%s.root", VarName[iVar].Data(), narr-1, version.Data()), "RECREATE");
 	TCanvas* c1[3];
 	TH1D* hV2[3];
 	for(Int_t iS = 0; iS < 3; iS++)
