@@ -26,6 +26,7 @@ void Drawdphi(Int_t iVar = 3, const Int_t ndphi = 3, TString version = "v1")
 		{
 			cdphi[iarr][iS] = new TCanvas(Form("cdphi_%d_%d", iarr, iS), "", 0, 0, 600, 600);
 			hdphi[iarr][iS] = new TH1D(Form("hdphi_%d_%d", iarr, iS), "", ndphi, 0, TMath::Pi()/2);
+			hdphi[iarr][iS]->Sumw2();
 		}
 //}}}
 
@@ -51,6 +52,7 @@ void Drawdphi(Int_t iVar = 3, const Int_t ndphi = 3, TString version = "v1")
 		{
 //Fit dphi Yield{{{
 			cdphi[iarr][iS]->cd();
+			hdphi[iarr][iS]->Scale(hdphi[iarr][iS]->Integral());
 			hdphi[iarr][iS]->Draw();
 			TF1* v2Fit = new TF1(Form("v2Fit_%d_%d", iarr, iS), "[1]*(1+2*[0]*TMath::Cos(2.0*x))", 0, TMath::PiOver2());
 			v2Fit->SetParLimits(0, 0., 1);
