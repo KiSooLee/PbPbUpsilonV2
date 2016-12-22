@@ -52,7 +52,7 @@ void Drawdphi(Int_t iVar = 3, const Int_t ndphi = 3, TString version = "v1")
 		{
 //Fit dphi Yield{{{
 			cdphi[iarr][iS]->cd();
-			hdphi[iarr][iS]->Scale(hdphi[iarr][iS]->Integral());
+			hdphi[iarr][iS]->Scale(1./hdphi[iarr][iS]->Integral());
 			hdphi[iarr][iS]->Draw();
 			TF1* v2Fit = new TF1(Form("v2Fit_%d_%d", iarr, iS), "[1]*(1+2*[0]*TMath::Cos(2.0*x))", 0, TMath::PiOver2());
 			v2Fit->SetParLimits(0, 0., 1);
