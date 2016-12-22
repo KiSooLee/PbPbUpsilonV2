@@ -42,7 +42,7 @@ void DrawV2(Int_t iVar = 0, TString version = "v1")
 	}
 //}}}
 
-	TFile* fin = new TFile(Form("dphi_fit_%s_%dbin_v2.root", VarName[iVar].Data(), narr-1), "READ");
+	TFile* fin = new TFile(Form("../dNdphi/dphi_fit_%s_%dbin_v2.root", VarName[iVar].Data(), narr-1), "READ");
 	TFile* fout = new TFile(Form("V2_distribution_%s_%dbin_v2.root", VarName[iVar].Data(), narr-1), "RECREATE");
 	TCanvas* c1[3];
 	TH1D* hV2[3];
