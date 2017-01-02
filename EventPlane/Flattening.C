@@ -16,7 +16,7 @@ void Flattening()
 {
 	TFile* fin = new TFile("/home/kisoo/work/Upsilon/PbPb/OniaTree_DoubleMu0ABCD_EvtPlane.root", "READ");
 	TTree* tin = (TTree*) fin->Get("hionia/myTree");
-	TString plmi[2] = {"pl", "mi"};
+	TString plmi[3] = {"pl", "mi", "mid"};
 
 //tree variables{{{
 	Int_t Centrality;
@@ -37,13 +37,13 @@ void Flattening()
 //}}}
 
 //Define histrograms{{{
-	TCanvas* c1[narr][2];
-	TH1F* hAng[narr][2];
-	TH1F* hAngf[narr][2];
+	TCanvas* c1[Cent_narr][3];
+	TH1F* hAng[Cent_narr][3];
+	TH1F* hAngf[Cent_narr][3];
 	gStyle->SetOptStat(0000);
-	for(Int_t icent = 0; icent < narr; icent++)
+	for(Int_t icent = 0; icent < Cent_narr; icent++)
 	{
-		for(Int_t i = 0; i < 2; i++)
+		for(Int_t i = 0; i < 3; i++)
 		{
 			c1[icent][i] = new TCanvas(Form("c1_%d_%d", icent, i), "", 0, 0, 600, 600);
 			hAng[icent][i] = new TH1F(Form("hAng_%d_%d", icent, i), "", 50, -1.6, 1.6);
@@ -61,16 +61,18 @@ void Flattening()
 		if(ievt%100000==0) cout << ">>>>> EVENT " << ievt << " / " << Nevt << endl;
 		tin->GetEntry(ievt);
 
-		for(Int_t icent = 0; icent < narr; icent++)
+		for(Int_t icent = 0; icent < Cent_narr; icent++)
 		{
-			if(icent < narr-1)
+			if(icent < Cent_narr-1)
 			{
 				if(Centrality >= CentBinsArr[icent] && Centrality < CentBinsArr[icent+1] && rpAng[6] > -9)
 				{
 					hAng[icent][0]->Fill(rpAng[6]);
 					hAng[icent][1]->Fill(rpAng[7]);
+					hAng[icent][2]->Fill(rpAng[8]);
 					hAngf[icent][0]->Fill(rpAngf[6]);
 					hAngf[icent][1]->Fill(rpAngf[7]);
+					hAngf[icent][2]->Fill(rpAngf[8]);
 				}
 			}
 			else
@@ -79,8 +81,10 @@ void Flattening()
 				{
 					hAng[icent][0]->Fill(rpAng[6]);
 					hAng[icent][1]->Fill(rpAng[7]);
+					hAng[icent][2]->Fill(rpAng[8]);
 					hAngf[icent][0]->Fill(rpAngf[6]);
 					hAngf[icent][1]->Fill(rpAngf[7]);
+					hAngf[icent][2]->Fill(rpAngf[8]);
 				}
 			}
 		}
@@ -88,9 +92,9 @@ void Flattening()
 //}}}
 
 //Draw angle distribution{{{
-	for(Int_t icent = 0; icent < narr; icent++)
+	for(Int_t icent = 0; icent < Cent_narr; icent++)
 	{
-		for(Int_t i = 0; i < 2; i++)
+		for(Int_t i = 0; i < 3; i++)
 		{
 			c1[icent][i]->cd();
 			MaxRange(hAng[icent][i], hAngf[icent][i], 1.2, 0);
@@ -105,7 +109,7 @@ void Flattening()
 			leg->Draw();
 			TLatex* latex = new TLatex();
 			FormLatex(latex, 13, 0.06);
-			if(icent < narr-1)
+			if(icent < Cent_narr-1)
 			{
 				latex->DrawLatex(0.3, 0.4, Form("%d - %d %s", int(CentBinsArr[icent]/2), int(CentBinsArr[icent+1]/2), "%"));
 				c1[icent][i]->SaveAs(Form("EventPlane_Flattening_%d-%d_%s_50bin.pdf", int(CentBinsArr[icent]), int(CentBinsArr[icent+1]), plmi[i].Data()));
