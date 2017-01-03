@@ -86,10 +86,10 @@ void Bkg_fit_function(TString BkgName = "Erf", TString version = "v1")
 //sigma{{{
 	RooRealVar sigma1S_1("sigma1S_1", "sigma1 of 1S", 0.04, 0.03, 0.18);
 	RooRealVar sigma2S_1("sigma2S_1", "sigma1 of 2S", 0.04, 0.03, 0.18);
-	RooRealVar sigma3S_1("sigma3S_1", "sigma1 of 3S", 0.04, 0.02, 0.18);
+	RooRealVar sigma3S_1("sigma3S_1", "sigma1 of 3S", 0.04, 0.02, 0.15);
 	RooRealVar sigma1S_2("sigma1S_2", "sigma2 of 1S", 0.04, 0.03, 0.18);
 	RooRealVar sigma2S_2("sigma2S_2", "sigma2 of 2S", 0.04, 0.03, 0.18);
-	RooRealVar sigma3S_2("sigma3S_2", "sigma2 of 3S", 0.04, 0.02, 0.18);
+	RooRealVar sigma3S_2("sigma3S_2", "sigma2 of 3S", 0.04, 0.02, 0.15);
 //}}}
 
 //alpha{{{
@@ -185,7 +185,7 @@ void Bkg_fit_function(TString BkgName = "Erf", TString version = "v1")
 //}}}
 
 //Draw mass plot{{{
-	RooRealVar* nSig1S = new RooRealVar("nSig1S", "# of 1S signal", 400, 0, 1000);
+	RooRealVar* nSig1S = new RooRealVar("nSig1S", "# of 1S signal", 400, 0, 2000);
 	RooRealVar* nSig2S = new RooRealVar("nSig2S", "# of 2S signal", 100, 0, 300);
 	RooRealVar* nSig3S = new RooRealVar("nSig3S", "# of 3S signal", 10, 0, 100);
 	RooRealVar* nBkg = new RooRealVar("nBkg", "number of background", 300, 0, 100000);
