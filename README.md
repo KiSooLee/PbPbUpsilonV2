@@ -1,4 +1,3 @@
-# PbPbUpsilonV2
 
 1. v2 study uses flattened Event Plane.
 	Validity of flattened Event Plane is checked by EventPlane/Flattening.C.
@@ -20,6 +19,8 @@
 	We choose Error function.
 
 6. With twoCB and Erf mass of Upsilon 1S, 2S, 3S are fitted by GetYield/doGetYield.sh for each bin.
+	doGetYield.sh run the GetYield.C macro. This macro get the parameter limits and initial values from Parameters_v?.txt.
+	One should adjust these values for detail fitting of each bins.
 
 7. dN/dphi distribution is fitted to calculate v2 value by dNdphi/dodphi.sh
 
@@ -44,3 +45,9 @@ rapidity: {-2.4, 2.4}
 Centrality: {40, 120}
 pt: {0, 30}
 3dphi bin
+
+v4:
+rapidity: {0, 1.2, 2.4};
+Centrality: {20, 30, 50, 80, 120};
+pt: {0, 3, 6, 10, 30};
+4dphi bin

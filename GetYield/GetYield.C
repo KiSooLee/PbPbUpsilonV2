@@ -10,6 +10,7 @@
 #include <TPaveText.h>
 #include <TMath.h>
 #include <iostream>
+#include <fstream>
 #include <TParameter.h>
 #include <RooRealVar.h>
 #include <RooArgSet.h>
@@ -32,37 +33,26 @@ using namespace std;
 using namespace RooFit;
 //}}}
 
-void GetYield(const Int_t iVar = 1, Int_t iarr = 0, Int_t ndphi = 3, Int_t idphi = 0, TString version = "v1")
+void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t iarr = 0, Int_t ndphi = 3, Int_t idphi = 0, TString version = "v1")
 {
 	const Int_t Nmassbins = 120;
 
 //Set target variable{{{
-	Double_t BinsArr[narr] = {0};
+	Double_t BinsArr[2] = {0};
 	if(iVar == 0)
 	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = rapBinsArr[iarr];
-		}
+		BinsArr[0] = rapBinsArr[iarr];
+		BinsArr[1] = rapBinsArr[iarr+1];
 	}
 	else if(iVar == 1)
 	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = CentBinsArr[iarr];
-		}
+		BinsArr[0] = CentBinsArr[iarr];
+		BinsArr[1] = CentBinsArr[iarr+1];
 	}
 	else if(iVar == 2)
 	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = ptBinsArr[iarr];
-		}
-	}
-	else
-	{
-		cout << "wrong variable number" << endl;
-		return;
+		BinsArr[0] = ptBinsArr[iarr];
+		BinsArr[1] = ptBinsArr[iarr+1];
 	}
 //}}}
 
@@ -83,7 +73,7 @@ void GetYield(const Int_t iVar = 1, Int_t iarr = 0, Int_t ndphi = 3, Int_t idphi
 
 	TH1D* hYield = new TH1D("hYield", "", 3, 0, 3);
 
-	RooDataSet* reducedDS = (RooDataSet*) weightedDS->reduce(RooArgSet(*(ws->var("mass"))), Form("(mupl_pt>4&&mumi_pt>4)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)", VarName[1].Data(), CentBinsArr[0], VarName[1].Data(), CentBinsArr[narr-1], VarName[0].Data(), rapBinsArr[0], VarName[0].Data(), rapBinsArr[narr-1], VarName[2].Data(), ptBinsArr[0], VarName[2].Data(), ptBinsArr[narr-1], VarName[iVar].Data(), BinsArr[iarr], VarName[iVar].Data(), BinsArr[iarr+1], "dphi", TMath::Pi()*(double)idphi/(2*(double)ndphi), "dphi", TMath::Pi()*((double)idphi+1)/(2*(double)ndphi)));
+	RooDataSet* reducedDS = (RooDataSet*) weightedDS->reduce(RooArgSet(*(ws->var("mass"))), Form("(mupl_pt>4&&mumi_pt>4)&&(fabs(%s)>=%f&&fabs(%s)<%f)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)&&(fabs(%s)>=%f&&fabs(%s)<%f)&&(%s>=%f&&%s<%f)", VarName[0].Data(), rapBinsArr[0], VarName[0].Data(), rapBinsArr[rap_narr-1], VarName[1].Data(), CentBinsArr[0], VarName[1].Data(), CentBinsArr[Cent_narr-1], VarName[2].Data(), ptBinsArr[0], VarName[2].Data(), ptBinsArr[pt_narr-1], VarName[iVar].Data(), BinsArr[0], VarName[iVar].Data(), BinsArr[1], "dphi", TMath::Pi()*(double)idphi/(2*(double)ndphi), "dphi", TMath::Pi()*((double)idphi+1)/(2*(double)ndphi)));
 	reducedDS->SetName("reducedDS");
 	ws->import(*reducedDS);
 	ws->var("mass")->setRange(8, 14);
@@ -117,30 +107,30 @@ void GetYield(const Int_t iVar = 1, Int_t iarr = 0, Int_t ndphi = 3, Int_t idphi
 //}}}
 
 //sigma{{{
-	RooRealVar sigma1S_1("sigma1S_1", "sigma1 of 1S", 0.04, 0.03, 0.18);
-	RooRealVar sigma2S_1("sigma2S_1", "sigma1 of 2S", 0.04, 0.03, 0.18);
-	RooRealVar sigma3S_1("sigma3S_1", "sigma1 of 3S", 0.04, 0.02, 0.18);
-	RooRealVar sigma1S_2("sigma1S_2", "sigma2 of 1S", 0.04, 0.03, 0.18);
-	RooRealVar sigma2S_2("sigma2S_2", "sigma2 of 2S", 0.04, 0.03, 0.18);
-	RooRealVar sigma3S_2("sigma3S_2", "sigma2 of 3S", 0.04, 0.02, 0.18);
+	RooRealVar sigma1S_1("sigma1S_1", "sigma1 of 1S", 0.05, 0.03, 0.18);
+	RooRealVar sigma2S_1("sigma2S_1", "sigma1 of 2S", 0.05, 0.03, 0.18);
+	RooRealVar sigma3S_1("sigma3S_1", "sigma1 of 3S", 0.05, 0.02, 0.15);
+	RooRealVar sigma1S_2("sigma1S_2", "sigma2 of 1S", 0.05, 0.03, 0.18);
+	RooRealVar sigma2S_2("sigma2S_2", "sigma2 of 2S", 0.05, 0.03, 0.18);
+	RooRealVar sigma3S_2("sigma3S_2", "sigma2 of 3S", 0.05, 0.02, 0.15);
 //}}}
 
 //alpha{{{
-	RooRealVar alpha1S_1("alpha1S_1", "alpha1 of 1S Crystal ball", 2., 1.1, 20.0);
-	RooRealVar alpha2S_1("alpha2S_1", "alpha1 of 2S Crystal ball", 2., 1.1, 20.0);
-	RooRealVar alpha3S_1("alpha3S_1", "alpha1 of 3S Crystal ball", 2., 1.1, 20.0);
-	RooRealVar alpha1S_2("alpha1S_2", "alpha2 of 1S Crystal ball", 2., 1.1, 20.0);
-	RooRealVar alpha2S_2("alpha2S_2", "alpha2 of 2S Crystal ball", 2., 1.1, 20.0);
-	RooRealVar alpha3S_2("alpha3S_2", "alpha2 of 3S Crystal ball", 2., 1.1, 20.0);
+	RooRealVar alpha1S_1("alpha1S_1", "alpha1 of 1S Crystal ball", 2., 0.7, 15.0);
+	RooRealVar alpha2S_1("alpha2S_1", "alpha1 of 2S Crystal ball", 2., 0.7, 15.0);
+	RooRealVar alpha3S_1("alpha3S_1", "alpha1 of 3S Crystal ball", 2., 0.7, 15.0);
+	RooRealVar alpha1S_2("alpha1S_2", "alpha2 of 1S Crystal ball", 2., 0.7, 15.0);
+	RooRealVar alpha2S_2("alpha2S_2", "alpha2 of 2S Crystal ball", 2., 0.7, 15.0);
+	RooRealVar alpha3S_2("alpha3S_2", "alpha2 of 3S Crystal ball", 2., 0.7, 15.0);
 //}}}
 
 //n{{{
-	RooRealVar n1S_1("n1S_1", "n1 of 1S Crystal ball", 2.0, 1.1, 20.0);
-	RooRealVar n2S_1("n2S_1", "n1 of 2S Crystal ball", 2.0, 1.1, 20.0);
-	RooRealVar n3S_1("n3S_1", "n1 of 3S Crystal ball", 2.0, 1.1, 20.0);
-	RooRealVar n1S_2("n1S_2", "n2 of 1S Crystal ball", 2.0, 1.1, 20.0);
-	RooRealVar n2S_2("n2S_2", "n2 of 2S Crystal ball", 2.0, 1.1, 20.0);
-	RooRealVar n3S_2("n3S_2", "n2 of 3S Crystal ball", 2.0, 1.1, 20.0);
+	RooRealVar n1S_1("n1S_1", "n1 of 1S Crystal ball", 2.0, 0.7, 15.0);
+	RooRealVar n2S_1("n2S_1", "n1 of 2S Crystal ball", 2.0, 0.7, 15.0);
+	RooRealVar n3S_1("n3S_1", "n1 of 3S Crystal ball", 2.0, 0.7, 15.0);
+	RooRealVar n1S_2("n1S_2", "n2 of 1S Crystal ball", 2.0, 0.7, 15.0);
+	RooRealVar n2S_2("n2S_2", "n2 of 2S Crystal ball", 2.0, 0.7, 15.0);
+	RooRealVar n3S_2("n3S_2", "n2 of 3S Crystal ball", 2.0, 0.7, 15.0);
 //}}}
 
 //fraction{{{
@@ -165,7 +155,7 @@ void GetYield(const Int_t iVar = 1, Int_t iarr = 0, Int_t ndphi = 3, Int_t idphi
 //}}}
 
 //Background function{{{
-	RooRealVar Erfmean("Erfmean", "Mean of Errfunction", 6, 0, 9);
+	RooRealVar Erfmean("Erfmean", "Mean of Errfunction", 5, 0, 9);
 	RooRealVar Erfsigma("Erfsigma", "Sigma of Errfunction", 1, 0, 100);
 	RooRealVar Erfp0("Erfp0", "1st parameter of Errfunction", 1, 0, 30);
 
@@ -181,10 +171,107 @@ void GetYield(const Int_t iVar = 1, Int_t iarr = 0, Int_t ndphi = 3, Int_t idphi
 	Background = (RooGenericPdf*) bkgErf;
 //}}}
 
+//Set Parameters{{{
+	Int_t ivar_par, narr_par, iarr_par, ndphi_par, idphi_par;
+	ifstream in;
+	in.open(Form("Parameters_%s.txt", version.Data()));
+	if(in.is_open())
+	{
+		Int_t i = 0;
+		while(1)
+		{
+//Define parameters{{{
+			Double_t sig11init, sig11min, sig11max, sig12init, sig12min, sig12max;
+			Double_t sig21init, sig21min, sig21max, sig22init, sig22min, sig22max;
+			Double_t sig31init, sig31min, sig31max, sig32init, sig32min, sig32max;
+			Double_t alp11init, alp11min, alp11max, alp12init, alp12min, alp12max;
+			Double_t alp21init, alp21min, alp21max, alp22init, alp22min, alp22max;
+			Double_t alp31init, alp31min, alp31max, alp32init, alp32min, alp32max;
+			Double_t n11init, n11min, n11max, n12init, n12min, n12max;
+			Double_t n21init, n21min, n21max, n22init, n22min, n22max;
+			Double_t n31init, n31min, n31max, n32init, n32min, n32max;
+			Double_t erfminit, erfmmin, erfmmax;
+			Double_t erfsiginit, erfsigmin, erfsigmax;
+			Double_t erfp0init, erfp0min, erfp0max;
+//}}}
+
+			if(!in.good()) break;
+			if(i < 1)
+			{
+				TString tmp1, tmp2, tmp3, tmp4, tmp5;
+				in >> tmp1 >> tmp2 >> tmp3 >> tmp4 >> tmp5;
+				cout << "***" << tmp2 << endl;
+			}
+			else if(i < 22)
+			{
+				TString tmp1, tmp2, tmp3, tmp4, tmp5, tmp6;
+				in >> tmp1 >> tmp2 >> tmp3 >> tmp4 >> tmp5 >> tmp6;
+			}
+			else
+			{
+//Get parameter{{{
+				in >> ivar_par >> narr_par >> iarr_par >> ndphi_par >> idphi_par >> sig11init >> sig11min >> sig11max >> sig12init >> sig12min >> sig12max >> sig21init >> sig21min >> sig21max >> sig22init >> sig22min >> sig22max >> sig31init >> sig31min >> sig31max >> sig32init >> sig32min >> sig32max >> alp11init >> alp11min >> alp11max >> alp12init >> alp12min >> alp12max >> alp21init >> alp21min >> alp21max >> alp22init >> alp22min >> alp22max >> alp31init >> alp31min >> alp31max >> alp32init >> alp32min >> alp32max >> n11init >> n11min >> n11max >> n12init >> n12min >> n12max >> n21init >> n21min >> n21max >> n22init >> n22min >> n22max >> n31init >> n31min >> n31max >> n32init >> n32min >> n32max >> erfminit >> erfmmin >> erfmmax >> erfsiginit >> erfsigmin >> erfsigmax >> erfp0init >> erfp0min >> erfp0max;
+//}}}
+
+//Set parameter{{{
+				if(ivar_par == iVar && narr_par == narr && iarr_par == iarr && ndphi_par == ndphi && idphi_par == idphi)
+				{
+					sigma1S_1.setRange(sig11min, sig11max);
+					sigma1S_1.setVal(sig11init);
+					sigma1S_2.setRange(sig12min, sig12max);
+					sigma1S_2.setVal(sig12init);
+					sigma2S_1.setRange(sig21min, sig21max);
+					sigma2S_1.setVal(sig21init);
+					sigma2S_2.setRange(sig22min, sig22max);
+					sigma2S_2.setVal(sig22init);
+					sigma3S_1.setRange(sig31min, sig31max);
+					sigma3S_1.setVal(sig31init);
+					sigma3S_2.setRange(sig32min, sig32max);
+					sigma3S_2.setVal(sig32init);
+					alpha1S_1.setRange(alp11min, alp11max);
+					alpha1S_1.setVal(alp11init);
+					alpha1S_2.setRange(alp12min, alp12max);
+					alpha1S_2.setVal(alp12init);
+					alpha2S_1.setRange(alp21min, alp21max);
+					alpha2S_1.setVal(alp21init);
+					alpha2S_2.setRange(alp22min, alp22max);
+					alpha2S_2.setVal(alp22init);
+					alpha3S_1.setRange(alp31min, alp31max);
+					alpha3S_1.setVal(alp31init);
+					alpha3S_2.setRange(alp32min, alp32max);
+					alpha3S_2.setVal(alp32init);
+					n1S_1.setRange(n11min, n11max);
+					n1S_1.setVal(n11init);
+					n1S_2.setRange(n12min, n12max);
+					n1S_2.setVal(n12init);
+					n2S_1.setRange(n21min, n21max);
+					n2S_1.setVal(n21init);
+					n2S_2.setRange(n22min, n22max);
+					n2S_2.setVal(n22init);
+					n3S_1.setRange(n31min, n31max);
+					n3S_1.setVal(n31init);
+					n3S_2.setRange(n32min, n32max);
+					n3S_2.setVal(n32init);
+					Erfmean.setRange(erfmmin, erfmmax);
+					Erfmean.setVal(erfminit);
+					Erfsigma.setRange(erfsigmin, erfsigmax);
+					Erfsigma.setVal(erfsiginit);
+					Erfp0.setRange(erfp0min, erfp0max);
+					Erfp0.setVal(erfp0init);
+					break;
+				}
+//}}}
+			}
+			i++;
+		}
+	}
+	in.close();
+//}}}
+
 //Draw mass plot{{{
-	RooRealVar* nSig1S = new RooRealVar("nSig1S", "# of 1S signal", 400, 0, 1000);
+	RooRealVar* nSig1S = new RooRealVar("nSig1S", "# of 1S signal", 400, 0, 10000);
 	RooRealVar* nSig2S = new RooRealVar("nSig2S", "# of 2S signal", 100, 0, 300);
-	RooRealVar* nSig3S = new RooRealVar("nSig3S", "# of 3S signal", 10, 0, 50);
+	RooRealVar* nSig3S = new RooRealVar("nSig3S", "# of 3S signal", 10, 0, 90);
 	RooRealVar* nBkg = new RooRealVar("nBkg", "number of background", 300, 0, 100000);
 	RooAddPdf* model = new RooAddPdf("model", "1S+2S+3S+Bkg", RooArgList(*Signal1S, *Signal2S, *Signal3S, *Background), RooArgList(*nSig1S, *nSig2S, *nSig3S, *nBkg));
 	ws->import(*model);
