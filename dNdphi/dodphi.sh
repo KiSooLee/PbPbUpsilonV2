@@ -1,7 +1,7 @@
 #!/bin/bash
-#Drawdphi.C+(iVar, ndphi, version)
+#Drawdphi.C+(iVar, narr, iarr, ndphi, idphi, version)
 
-version="v2"
-root -l -b -q 'Drawdphi.C+('0', '3', '\"$version\"')'
-root -l -b -q 'Drawdphi.C+('1', '3', '\"$version\"')'
-root -l -b -q 'Drawdphi.C+('2', '3', '\"$version\"')'
+version="v4"
+root -l -b -q 'Drawdphi.C+('0', '3', '4', '\"$version\"')'
+root -l -b -q 'Drawdphi.C+('1', '5', '4', '\"$version\"')'
+root -l -b -q 'Drawdphi.C+('2', '5', '4', '\"$version\"')'

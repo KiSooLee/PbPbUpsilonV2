@@ -10,46 +10,18 @@
 #include "../Style_Kisoo.h"
 //}}}
 
-void DrawV2(Int_t iVar = 0, TString version = "v1")
+void DrawV2(Int_t iVar = 0, const Int_t narr = 3, TString version = "v1")
 {
-//Set target variable{{{
-	Double_t BinsArr[narr] = {0};
-	if(iVar == 0)
-	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = rapBinsArr[iarr];
-		}
-	}
-	else if(iVar == 1)
-	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = CentBinsArr[iarr];
-		}
-	}
-	else if(iVar == 2)
-	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = ptBinsArr[iarr];
-		}
-	}
-	else
-	{
-		cout << "wrong variable number" << endl;
-		return;
-	}
-//}}}
-
-	TFile* fin = new TFile(Form("../dNdphi/dphi_fit_%s_%dbin_%s.root", VarName[iVar].Data(), narr-1, version.Data()), "READ");
-	TFile* fout = new TFile(Form("V2_distribution_%s_%dbin_%s.root", VarName[iVar].Data(), narr-1, version.Data()), "RECREATE");
+	TFile* fin = new TFile(Form("../dNdphi/dphi_fit_%s_%s.root", VarName[iVar].Data(), version.Data()), "READ");
+	TFile* fout = new TFile(Form("V2_distribution_%s_%s.root", VarName[iVar].Data(), version.Data()), "RECREATE");
 	TCanvas* c1[3];
 	TH1D* hV2[3];
 	for(Int_t iS = 0; iS < 3; iS++)
 	{
 		c1[iS] = new TCanvas(Form("c1_%d", iS), "", 0, 0, 600, 600);
-		hV2[iS] = new TH1D(Form("hV2_%d", iS), "", narr-1, BinsArr);
+		if(iVar == 0) hV2[iS] = new TH1D(Form("hV2_%d", iS), "", narr-1, rapBinsArr);
+		else if(iVar == 1) hV2[iS] = new TH1D(Form("hV2_%d", iS), "", narr-1, CentBinsArr);
+		else hV2[iS] = new TH1D(Form("hV2_%d", iS), "", narr-1, ptBinsArr);
 	}
 
 	for(Int_t iarr = 0; iarr < narr-1; iarr++)
@@ -71,7 +43,7 @@ void DrawV2(Int_t iVar = 0, TString version = "v1")
 	{
 		c1[iS]->cd();
 		hV2[iS]->Draw();
-		c1[iS]->SaveAs(Form("V2_distribution_%s_%dbin_%dS_%s.pdf", VarName[iVar].Data(), narr-1, iS+1, version.Data()));
+		c1[iS]->SaveAs(Form("V2_distribution_%s_%dS_%s.pdf", VarName[iVar].Data(), iS+1, version.Data()));
 		hV2[iS]->Write();
 	}
 }

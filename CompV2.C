@@ -12,40 +12,10 @@
 #include "Style_Kisoo.h"
 //}}}
 
-void CompV2(Int_t iVar = 0)
+void CompV2(Int_t iVar = 0, const Int_t narr = 3, TString version1S = "v4", TString version2S = "v4")
 {
-//Set target variable{{{
-	Double_t BinsArr[narr] = {0};
-	if(iVar == 0)
-	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = rapBinsArr[iarr];
-		}
-	}
-	else if(iVar == 1)
-	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = CentBinsArr[iarr];
-		}
-	}
-	else if(iVar == 2)
-	{
-		for(Int_t iarr = 0; iarr < narr; iarr++)
-		{
-			BinsArr[iarr] = ptBinsArr[iarr];
-		}
-	}
-	else
-	{
-		cout << "wrong variable number" << endl;
-		return;
-	}
-//}}}
-
-	TFile* fin1S = new TFile(Form("GetV2/V2_distribution_%s_%dbin_v3.root", VarName[iVar].Data(), narr-1), "READ");
-	TFile* fin2S = new TFile(Form("GetV2/V2_distribution_%s_%dbin_v3.root", VarName[iVar].Data(), narr-1), "READ");
+	TFile* fin1S = new TFile(Form("GetV2/V2_distribution_%s_%s.root", VarName[iVar].Data(), version1S.Data()), "READ");
+	TFile* fin2S = new TFile(Form("GetV2/V2_distribution_%s_%s.root", VarName[iVar].Data(), version2S.Data()), "READ");
 	TCanvas* c1 = new TCanvas("c1", "", 0, 0, 600, 600);
 	TH1D* h1S = (TH1D*) fin1S->Get("hV2_0");
 	TH1D* h2S = (TH1D*) fin2S->Get("hV2_1");
@@ -81,7 +51,9 @@ cout << "1S x: " << x << ", y: " << y << endl;
 	g1S->GetYaxis()->SetTitle("v2");
 	g1S->SetMaximum(0.25);
 	g1S->SetMinimum(-0.1);
-	g1S->GetXaxis()->SetRangeUser(BinsArr[0], BinsArr[narr-1]);
+	if(iVar == 0) g1S->GetXaxis()->SetRangeUser(rapBinsArr[0], rapBinsArr[narr-1]);
+	else if(iVar == 1) g1S->GetXaxis()->SetRangeUser(CentBinsArr[0], CentBinsArr[narr-1]);
+	else g1S->GetXaxis()->SetRangeUser(ptBinsArr[0], ptBinsArr[narr-1]);
 	g1S->SetMarkerStyle(21);
 	g1S->SetMarkerSize(1);
 	g1S->SetMarkerColor(1);
@@ -90,11 +62,11 @@ cout << "1S x: " << x << ", y: " << y << endl;
 	g2S->SetMarkerSize(1);
 	g2S->SetMarkerColor(2);
 	g2S->SetLineColor(2);
-	g1S->Draw("alp");
-	g2S->Draw("same");
+	g1S->Draw("ap");
+	g2S->Draw("samep");
 	TLegend* leg = new TLegend(0.7, 0.8, 0.9, 0.9);
 	leg->AddEntry(g1S, "1S", "pe");
 	leg->AddEntry(g2S, "2S", "pe");
 	leg->Draw();
-	c1->SaveAs(Form("v2Comp_%s_v3_v3.pdf", VarName[iVar].Data()));
+	c1->SaveAs(Form("v2Comp_%s_%s_%s.pdf", VarName[iVar].Data(), version1S.Data(), version2S.Data()));
 }
