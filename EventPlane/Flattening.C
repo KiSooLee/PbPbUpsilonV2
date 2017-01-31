@@ -16,7 +16,7 @@ void Flattening()
 {
 	TFile* fin = new TFile("/home/kisoo/work/Upsilon/PbPb/OniaTree_DoubleMu0ABCD_EvtPlane.root", "READ");
 	TTree* tin = (TTree*) fin->Get("hionia/myTree");
-	TString plmi[3] = {"pl", "mi", "mid"};
+	TString plmi[3] = {"mi", "pl", "abs"};
 
 //tree variables{{{
 	Int_t Centrality;
