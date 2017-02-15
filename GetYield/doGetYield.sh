@@ -1,47 +1,10 @@
 #!/bin/bash
-#GetYield.C+(iVar, narr, iarr, ndphi, idphi, version)
+#GetYield.C+(iVar, narr, ndphi, version)
 #iVar: 0 = y, 1 = Centrality, 2 = pt
 #maximum of iarr should be narr-2
 
-version="v4"
+version="v8"
 
-#root -l -b -q 'GetYield.C+('0', '3', '0', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('0', '3', '0', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('0', '3', '0', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('0', '3', '0', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('0', '3', '1', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('0', '3', '1', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('0', '3', '1', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('0', '3', '1', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '0', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '0', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '0', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '0', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '1', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '1', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '1', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '1', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '2', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '2', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '2', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '2', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '3', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '3', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '3', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('1', '5', '3', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '0', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '0', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '0', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '0', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '1', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '1', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '1', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '1', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '2', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '2', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '2', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '2', '4', '3', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '3', '4', '0', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '3', '4', '1', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '3', '4', '2', '\"$version\"')'
-#root -l -b -q 'GetYield.C+('2', '5', '3', '4', '3', '\"$version\"')'
+root -l -b -q 'GetYield.C+('0', '3', '4', '\"$version\"')'
+root -l -b -q 'GetYield.C+('1', '4', '4', '\"$version\"')'
+root -l -b -q 'GetYield.C+('2', '4', '4', '\"$version\"')'

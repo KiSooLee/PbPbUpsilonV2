@@ -21,11 +21,30 @@ void Drawdphi(Int_t iVar = 3, const Int_t narr = 3, const Int_t ndphi = 3, TStri
 	TFile* fout = new TFile(Form("dphi_fit_%s_%s.root", VarName[iVar].Data(), version.Data()), "RECREATE");
 	for(Int_t iarr = 0; iarr < narr-1; iarr++)
 	{
+//Set target variable{{{
+		Double_t BinsArr[2] = {0};
+		if(iVar == 0)
+		{
+			BinsArr[0] = rapBinsArr[iarr];
+			BinsArr[1] = rapBinsArr[iarr+1];
+		}
+		else if(iVar == 1)
+		{
+			BinsArr[0] = CentBinsArr[iarr];
+			BinsArr[1] = CentBinsArr[iarr+1];
+		}
+		else if(iVar == 2)
+		{
+			BinsArr[0] = ptBinsArr[iarr];
+			BinsArr[1] = ptBinsArr[iarr+1];
+		}
+//}}}
+
 //Define canvas and histogram{{{
 		for(Int_t iS = 0; iS < 3; iS++)
 		{
-			cdphi[iarr][iS] = new TCanvas(Form("cdphi_%d_%d", iarr, iS), "", 0, 0, 600, 600);
-			hdphi[iarr][iS] = new TH1D(Form("hdphi_%d_%d", iarr, iS), "", ndphi, 0, TMath::Pi()/2);
+			cdphi[iarr][iS] = new TCanvas(Form("cdphi_%d_%dS", iarr, iS+1), "", 0, 0, 600, 600);
+			hdphi[iarr][iS] = new TH1D(Form("hdphi_%s_%.1f_%.1f_%dS", VarName[iVar].Data(), BinsArr[0], BinsArr[1], iS+1), "", ndphi, 0, TMath::Pi()/2);
 			hdphi[iarr][iS]->Sumw2();
 		}
 //}}}
@@ -33,8 +52,9 @@ void Drawdphi(Int_t iVar = 3, const Int_t narr = 3, const Int_t ndphi = 3, TStri
 		for(Int_t idphi = 0; idphi < ndphi; idphi++)
 		{
 //Get Yield{{{
-			fin[iarr][idphi] = new TFile(Form("../GetYield/Yield_%s_%dbin_%dth_%dndphi_%dth_dphi_%s.root", VarName[iVar].Data(), narr-1, iarr, ndphi, idphi, version.Data()), "READ");
-			hYield[iarr][idphi] = (TH1D*) fin[iarr][idphi]->Get("hYield");
+			fin[iarr][idphi] = new TFile(Form("../GetYield/Yield_%s_%dbin_%dndphi_%s.root", VarName[iVar].Data(), narr-1, ndphi, version.Data()), "READ");
+			hYield[iarr][idphi] = (TH1D*) fin[iarr][idphi]->Get(Form("hYield_%s_%.1f_%.1f_%d", VarName[iVar].Data(), BinsArr[0], BinsArr[1], idphi));
+
 			for(Int_t iS = 0; iS < 3; iS++)
 			{
 				hdphi[iarr][iS]->SetBinContent(idphi+1, hYield[iarr][idphi]->GetBinContent(iS+1));

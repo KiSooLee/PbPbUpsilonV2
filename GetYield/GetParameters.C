@@ -33,7 +33,7 @@ using namespace std;
 using namespace RooFit;
 //}}}
 
-void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TString version = "v1")
+void GetParameters(const Int_t iVar = 1, const Int_t narr = 3, TString version = "v1")
 {
 	const Int_t Nmassbins = 120;
 
@@ -49,83 +49,43 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 	RooDataSet* weightedDS = new RooDataSet("weightedDS", "weight dataset", *initialDS->get(), Import(*initialDS), WeightVar(*ws->var("weight")));
 //}}}
 
-	TFile* fout = new TFile(Form("Yield_%s_%dbin_%dndphi_%s.root", VarName[iVar].Data(), narr-1, ndphi, version.Data()), "RECREATE");
+	TFile* fout = new TFile(Form("ParameterPlot_%s_%s.root", VarName[iVar].Data(), version.Data()), "RECREATE");
 	fout->cd();
 
-	for(Int_t iarr = 0; iarr < narr-1; iarr++)
+	FILE* ftxt;
+	ftxt = fopen(Form("Parameters_%s_%s.txt", VarName[iVar].Data(), version.Data()), "w");
+	if(ftxt != NULL)
 	{
+		for(Int_t iarr = 0; iarr < narr-1; iarr++)
+		{
 
 //Set target variable{{{
-		Double_t BinsArr[2] = {0};
-		if(iVar == 0)
-		{
-			BinsArr[0] = rapBinsArr[iarr];
-			BinsArr[1] = rapBinsArr[iarr+1];
-		}
-		else if(iVar == 1)
-		{
-			BinsArr[0] = CentBinsArr[iarr];
-			BinsArr[1] = CentBinsArr[iarr+1];
-		}
-		else if(iVar == 2)
-		{
-			BinsArr[0] = ptBinsArr[iarr];
-			BinsArr[1] = ptBinsArr[iarr+1];
-		}
-//}}}
-
-//Define parameters{{{
-		Int_t ivar_par, narr_par, iarr_par;
-		Double_t sig11, sig12, sig21, sig22, sig31, sig32;
-		Double_t alp11, alp12, alp21, alp22, alp31, alp32;
-		Double_t n11, n12, n21, n22, n31, n32;
-		Double_t erfm, erfsig, erfp0;
-//}}}
-
-//Get parameter{{{
-		ifstream in;
-		in.open(Form("Parameters_%s_%s.txt", VarName[iVar].Data(), version.Data()));
-		if(in.is_open())
-		{
-			while(!in.eof())
+			Double_t BinsArr[2] = {0};
+			if(iVar == 0)
 			{
-
-				if(!in.good())
-				{
-					cout << "Parameter File is wrong!!! Please Check!!!" << endl;
-					return;
-				}
-				else
-				{
-
-					in >> ivar_par >> narr_par >> iarr_par >> sig11 >> sig12 >> sig21 >> sig22 >> sig31 >> sig32 >> alp11 >> alp12 >> alp21 >> alp22 >> alp31 >> alp32 >> n11 >> n12 >> n21 >> n22 >> n31 >> n32 >> erfm >> erfsig >> erfp0;
-
-					if(ivar_par == iVar && narr_par == narr && iarr_par == iarr)
-
-					{
-						cout << " " << endl;
-						cout << "********** matched parameter found!!! **********" << endl;
-						cout << " " << endl;
-						break;
-					}
-				}
+				BinsArr[0] = rapBinsArr[iarr];
+				BinsArr[1] = rapBinsArr[iarr+1];
 			}
-		}
-		in.close();
+			else if(iVar == 1)
+			{
+				BinsArr[0] = CentBinsArr[iarr];
+				BinsArr[1] = CentBinsArr[iarr+1];
+			}
+			else if(iVar == 2)
+			{
+				BinsArr[0] = ptBinsArr[iarr];
+				BinsArr[1] = ptBinsArr[iarr+1];
+			}
 //}}}
 
-		for(Int_t idphi = 0; idphi < ndphi; idphi++)
-		{
-//Reduce dataset{{{
-			RooDataSet* reducedDS = (RooDataSet*) weightedDS->reduce(RooArgSet(*(ws->var("mass"))), Form("(mupl_pt>4&&mumi_pt>4)&&(fabs(%s)>=%f&&fabs(%s)<%f)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)&&(fabs(%s)>=%f&&fabs(%s)<%f)&&(%s>=%f&&%s<%f)", VarName[0].Data(), rapBinsArr[0], VarName[0].Data(), rapBinsArr[rap_narr-1], VarName[1].Data(), CentBinsArr[0], VarName[1].Data(), CentBinsArr[Cent_narr-1], VarName[2].Data(), ptBinsArr[0], VarName[2].Data(), ptBinsArr[pt_narr-1], VarName[iVar].Data(), BinsArr[0], VarName[iVar].Data(), BinsArr[1], "dphi", TMath::Pi()*(double)idphi/(2*(double)ndphi), "dphi", TMath::Pi()*((double)idphi+1)/(2*(double)ndphi)));
+			RooDataSet* reducedDS = (RooDataSet*) weightedDS->reduce(RooArgSet(*(ws->var("mass"))), Form("(mupl_pt>4&&mumi_pt>4)&&(fabs(%s)>=%f&&fabs(%s)<%f)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)", VarName[0].Data(), rapBinsArr[0], VarName[0].Data(), rapBinsArr[rap_narr-1], VarName[1].Data(), CentBinsArr[0], VarName[1].Data(), CentBinsArr[Cent_narr-1], VarName[2].Data(), ptBinsArr[0], VarName[2].Data(), ptBinsArr[pt_narr-1], VarName[iVar].Data(), BinsArr[0], VarName[iVar].Data(), BinsArr[1]));
 			reducedDS->SetName("reducedDS");
 			ws->import(*reducedDS);
 			ws->var("mass")->setRange(8, 14);
 			ws->var("mass")->Print();
-//}}}
 
 //Set Canvas and Pad{{{
-			TCanvas* c1 = new TCanvas("c1", "", 0, 0, 600, 600);
+			TCanvas* c1 = new TCanvas(Form("c1_%d", iarr), "", 0, 0, 600, 600);
 			c1->cd();
 			TPad* pad_mass = new TPad("pad_mass", "pad_mass", 0, 0.25, 0.98, 1.0);
 			pad_mass->Draw();
@@ -135,8 +95,6 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 			TPad* pad_leg = new TPad("pad_leg", "pad_leg", 0.65, 0.35, 0.85, 0.92);
 			pad_leg->SetBottomMargin(0);
 			pad_leg->Draw();
-
-			TH1D* hYield = new TH1D(Form("hYield_%s_%.1f_%.1f_%d", VarName[iVar].Data(), BinsArr[0], BinsArr[1], idphi), "", 3, 0, 3);
 //}}}
 
 			pad_mass->cd();
@@ -205,7 +163,7 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 			RooRealVar Erfmean("Erfmean", "Mean of Errfunction", 5, 0, 9);
 			RooRealVar Erfsigma("Erfsigma", "Sigma of Errfunction", 1, 0, 100);
 			RooRealVar Erfp0("Erfp0", "1st parameter of Errfunction", 1, 0, 30);
-
+		
 			RooGenericPdf* bkgErf = new RooGenericPdf("bkgErr", "Error background", "TMath::Exp(-@0/@1)*(TMath::Erf((@0-@2)/(TMath::Sqrt(2)*@3))+1)*0.5", RooArgList(*(ws->var("mass")), Erfp0, Erfmean, Erfsigma));
 //}}}
 
@@ -219,27 +177,87 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 //}}}
 
 //Set Parameters{{{
-			sigma1S_1.setVal(sig11); sigma1S_1.setConstant(sig11);
-			sigma1S_2.setVal(sig12); sigma1S_2.setConstant(sig12);
-			sigma2S_1.setVal(sig21); sigma2S_1.setConstant(sig21);
-			sigma2S_2.setVal(sig22); sigma2S_2.setConstant(sig22);
-			sigma3S_1.setVal(sig31); sigma3S_1.setConstant(sig31);
-			sigma3S_2.setVal(sig32); sigma3S_2.setConstant(sig32);
-			alpha1S_1.setVal(alp11); alpha1S_1.setConstant(alp11);
-			alpha1S_2.setVal(alp12); alpha1S_2.setConstant(alp12);
-			alpha2S_1.setVal(alp21); alpha2S_1.setConstant(alp21);
-			alpha2S_2.setVal(alp22); alpha2S_2.setConstant(alp22);
-			alpha3S_1.setVal(alp31); alpha3S_1.setConstant(alp31);
-			alpha3S_2.setVal(alp32); alpha3S_2.setConstant(alp32);
-			n1S_1.setVal(n11); n1S_1.setConstant(n11);
-			n1S_2.setVal(n12); n1S_2.setConstant(n12);
-			n2S_1.setVal(n21); n2S_1.setConstant(n21);
-			n2S_2.setVal(n22); n2S_2.setConstant(n22);
-			n3S_1.setVal(n31); n3S_1.setConstant(n31);
-			n3S_2.setVal(n32); n3S_2.setConstant(n32);
-			Erfmean.setVal(erfm); Erfmean.setConstant(erfm);
-			Erfsigma.setVal(erfsig); Erfsigma.setConstant(erfsig);
-			Erfp0.setVal(erfp0); Erfp0.setConstant(erfp0);
+			Int_t ivar_par, narr_par, iarr_par, iS_par;
+			ifstream in;
+			in.open(Form("MCParameters_%s_%s.txt", VarName[iVar].Data(), version.Data()));
+			if(in.is_open())
+			{
+				while(!in.eof())
+				{
+//Define parameters{{{
+					Double_t sig11init, sig11min, sig11max, sig12init, sig12min, sig12max;
+					Double_t sig21init, sig21min, sig21max, sig22init, sig22min, sig22max;
+					Double_t sig31init, sig31min, sig31max, sig32init, sig32min, sig32max;
+					Double_t alp11init, alp11min, alp11max, alp12init, alp12min, alp12max;
+					Double_t alp21init, alp21min, alp21max, alp22init, alp22min, alp22max;
+					Double_t alp31init, alp31min, alp31max, alp32init, alp32min, alp32max;
+					Double_t n11init, n11min, n11max, n12init, n12min, n12max;
+					Double_t n21init, n21min, n21max, n22init, n22min, n22max;
+					Double_t n31init, n31min, n31max, n32init, n32min, n32max;
+//}}}za
+
+					if(!in.good())
+					{
+						cout << "Parameter File is wrong!!! Please Check!!!" << endl;
+						return;
+					}
+					else
+					{
+//Get parameter{{{
+						in >> ivar_par >> narr_par >> iarr_par >> iS_par >> sig11init >> sig11min >> sig11max >> sig12init >> sig12min >> sig12max >> alp11init >> alp11min >> alp11max >> alp12init >> alp12min >> alp12max >> n11init >> n11min >> n11max >> n12init >> n12min >> n12max;
+						in >> ivar_par >> narr_par >> iarr_par >> iS_par >> sig21init >> sig21min >> sig21max >> sig22init >> sig22min >> sig22max >> alp21init >> alp21min >> alp21max >> alp22init >> alp22min >> alp22max >> n21init >> n21min >> n21max >> n22init >> n22min >> n22max;
+						in >> ivar_par >> narr_par >> iarr_par >> iS_par >> sig31init >> sig31min >> sig31max >> sig32init >> sig32min >> sig32max >> alp31init >> alp31min >> alp31max >> alp32init >> alp32min >> alp32max >> n31init >> n31min >> n31max >> n32init >> n32min >> n32max;
+//}}}
+
+//Set parameter{{{
+						if(ivar_par == iVar && narr_par == narr && iarr_par == iarr)
+						{
+							cout << " " << endl;
+							cout << "********** matched parameter found!!! **********" << endl;
+							cout << " " << endl;
+							sigma1S_1.setRange(sig11min, sig11max);
+							sigma1S_1.setVal(sig11init);
+							sigma1S_2.setRange(sig12min, sig12max);
+							sigma1S_2.setVal(sig12init);
+							sigma2S_1.setRange(sig21min, sig21max);
+							sigma2S_1.setVal(sig21init);
+							sigma2S_2.setRange(sig22min, sig22max);
+							sigma2S_2.setVal(sig22init);
+							sigma3S_1.setRange(sig31min, sig31max);
+							sigma3S_1.setVal(sig31init);
+							sigma3S_2.setRange(sig32min, sig32max);
+							sigma3S_2.setVal(sig32init);
+							alpha1S_1.setRange(alp11min, alp11max);
+							alpha1S_1.setVal(alp11init);
+							alpha1S_2.setRange(alp12min, alp12max);
+							alpha1S_2.setVal(alp12init);
+							alpha2S_1.setRange(alp21min, alp21max);
+							alpha2S_1.setVal(alp21init);
+							alpha2S_2.setRange(alp22min, alp22max);
+							alpha2S_2.setVal(alp22init);
+							alpha3S_1.setRange(alp31min, alp31max);
+							alpha3S_1.setVal(alp31init);
+							alpha3S_2.setRange(alp32min, alp32max);
+							alpha3S_2.setVal(alp32init);
+							n1S_1.setRange(n11min, n11max);
+							n1S_1.setVal(n11init);
+							n1S_2.setRange(n12min, n12max);
+							n1S_2.setVal(n12init);
+							n2S_1.setRange(n21min, n21max);
+							n2S_1.setVal(n21init);
+							n2S_2.setRange(n22min, n22max);
+							n2S_2.setVal(n22init);
+							n3S_1.setRange(n31min, n31max);
+							n3S_1.setVal(n31init);
+							n3S_2.setRange(n32min, n32max);
+							n3S_2.setVal(n32init);
+							break;
+						}
+//}}}
+					}
+				}
+			}
+			in.close();
 //}}}
 
 //Draw mass plot{{{
@@ -305,25 +323,34 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 			WriteMessage("Writing result is Done !!!");
 //}}}
 
-//Save Yield{{{
-			Double_t Yield1S = ws->var("nSig1S")->getVal();
-			Double_t Yield1SErr = ws->var("nSig1S")->getError();
-			Double_t Yield2S = ws->var("nSig2S")->getVal();
-			Double_t Yield2SErr = ws->var("nSig2S")->getError();
-			Double_t Yield3S = ws->var("nSig3S")->getVal();
-			Double_t Yield3SErr = ws->var("nSig3S")->getError();
+//Get result parameters{{{
+			Double_t Sigma1S1 = ws->var("sigma1S_1")->getVal();
+			Double_t Sigma1S2 = ws->var("sigma1S_2")->getVal();
+			Double_t Sigma2S1 = ws->var("sigma2S_1")->getVal();
+			Double_t Sigma2S2 = ws->var("sigma2S_2")->getVal();
+			Double_t Sigma3S1 = ws->var("sigma3S_1")->getVal();
+			Double_t Sigma3S2 = ws->var("sigma3S_2")->getVal();
+			Double_t Alpha1S1 = ws->var("alpha1S_1")->getVal();
+			Double_t Alpha1S2 = ws->var("alpha1S_2")->getVal();
+			Double_t Alpha2S1 = ws->var("alpha2S_1")->getVal();
+			Double_t Alpha2S2 = ws->var("alpha2S_2")->getVal();
+			Double_t Alpha3S1 = ws->var("alpha3S_1")->getVal();
+			Double_t Alpha3S2 = ws->var("alpha3S_2")->getVal();
+			Double_t N1S1 = ws->var("n1S_1")->getVal();
+			Double_t N1S2 = ws->var("n1S_2")->getVal();
+			Double_t N2S1 = ws->var("n2S_1")->getVal();
+			Double_t N2S2 = ws->var("n2S_2")->getVal();
+			Double_t N3S1 = ws->var("n3S_1")->getVal();
+			Double_t N3S2 = ws->var("n3S_2")->getVal();
+			Double_t ErfMean = ws->var("Erfmean")->getVal();
+			Double_t ErfSigma = ws->var("Erfsigma")->getVal();
+			Double_t ErfP0 = ws->var("Erfp0")->getVal();
 
-			hYield->SetBinContent(1, Yield1S);
-			hYield->SetBinError(1, Yield1SErr);
-			hYield->SetBinContent(2, Yield2S);
-			hYield->SetBinError(2, Yield2SErr);
-			hYield->SetBinContent(3, Yield3S);
-			hYield->SetBinError(3, Yield3SErr);
+			fprintf(ftxt, "%d %d %d %.3f %.3f %.3f %.3f %.3f %.3f %.1f %.1f %.1f %.1f %.1f %.1f %.1f %.1f %.1f %.1f %.1f %.1f %.1f %.1f %.1f \n", iVar, narr, iarr, Sigma1S1, Sigma1S2, Sigma2S1, Sigma2S2, Sigma3S1, Sigma3S1, Alpha1S1, Alpha1S2, Alpha2S1, Alpha2S2, Alpha3S1, Alpha3S2, N1S1, N1S2, N2S1, N2S2, N3S1, N3S2, ErfMean, ErfSigma, ErfP0);
 //}}}
 
-			c1->SaveAs(Form("MassDistribution_%s_%dbin_%dth_%dndphi_%ddphi_%s.pdf", VarName[iVar].Data(), narr-1, iarr, ndphi, idphi, version.Data()));
+			c1->SaveAs(Form("MassDistribution_%s_%dbin_%dth_%s.pdf", VarName[iVar].Data(), narr-1, iarr, version.Data()));
 			massPlot->Write();
-			hYield->Write();
 		}
 	}
 }
