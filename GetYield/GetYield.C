@@ -37,20 +37,7 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 {
 	const Int_t Nmassbins = 120;
 
-//Get data{{{
-	TFile* fin = new TFile(Form("../SkimmedFiles/Skim_OniaTree_PbPb_DoubleMu0ABCD_EvtPlane.root"), "READ");
-	RooDataSet* dataset = (RooDataSet*) fin->Get("dataset");
-	RooWorkspace* ws = new RooWorkspace(Form("workspace"));
-	ws->import(*dataset);
-	ws->data("dataset")->Print();
-
-	RooDataSet* initialDS = (RooDataSet*) dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y")), *(ws->var("dphi")), *(ws->var("Centrality")), *(ws->var("weight")), *(ws->var("mupl_pt")), *(ws->var("mumi_pt"))));
-	initialDS->SetName("initialDS");
-	RooDataSet* weightedDS = new RooDataSet("weightedDS", "weight dataset", *initialDS->get(), Import(*initialDS), WeightVar(*ws->var("weight")));
-//}}}
-
 	TFile* fout = new TFile(Form("Yield_%s_%dbin_%dndphi_%s.root", VarName[iVar].Data(), narr-1, ndphi, version.Data()), "RECREATE");
-	fout->cd();
 
 	for(Int_t iarr = 0; iarr < narr-1; iarr++)
 	{
@@ -77,8 +64,7 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 //Define parameters{{{
 		Int_t ivar_par, narr_par, iarr_par;
 		Double_t sig11, sig12, sig21, sig22, sig31, sig32;
-		Double_t alp11, alp12, alp21, alp22, alp31, alp32;
-		Double_t n11, n12, n21, n22, n31, n32;
+		Double_t Frac, alp, N;
 		Double_t erfm, erfsig, erfp0;
 //}}}
 
@@ -98,7 +84,7 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 				else
 				{
 
-					in >> ivar_par >> narr_par >> iarr_par >> sig11 >> sig12 >> sig21 >> sig22 >> sig31 >> sig32 >> alp11 >> alp12 >> alp21 >> alp22 >> alp31 >> alp32 >> n11 >> n12 >> n21 >> n22 >> n31 >> n32 >> erfm >> erfsig >> erfp0;
+					in >> ivar_par >> narr_par >> iarr_par >> sig11 >> sig12 >> sig21 >> sig22 >> sig31 >> sig32 >> Frac >> alp >> N >> erfm >> erfsig >> erfp0;
 
 					if(ivar_par == iVar && narr_par == narr && iarr_par == iarr)
 
@@ -116,6 +102,18 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 
 		for(Int_t idphi = 0; idphi < ndphi; idphi++)
 		{
+//Get data{{{
+			TFile* fin = new TFile(Form("../SkimmedFiles/Skim_OniaTree_PbPb_DoubleMu0ABCD_EvtPlane.root"), "READ");
+			RooDataSet* dataset = (RooDataSet*) fin->Get("dataset");
+			RooWorkspace* ws = new RooWorkspace(Form("workspace"));
+			ws->import(*dataset);
+			ws->data("dataset")->Print();
+
+			RooDataSet* initialDS = (RooDataSet*) dataset->reduce(RooArgSet(*(ws->var("mass")), *(ws->var("pt")), *(ws->var("y")), *(ws->var("dphi")), *(ws->var("Centrality")), *(ws->var("weight")), *(ws->var("mupl_pt")), *(ws->var("mumi_pt"))));
+			initialDS->SetName("initialDS");
+			RooDataSet* weightedDS = new RooDataSet("weightedDS", "weight dataset", *initialDS->get(), Import(*initialDS), WeightVar(*ws->var("weight")));
+//}}}
+
 //Reduce dataset{{{
 			RooDataSet* reducedDS = (RooDataSet*) weightedDS->reduce(RooArgSet(*(ws->var("mass"))), Form("(mupl_pt>4&&mumi_pt>4)&&(fabs(%s)>=%f&&fabs(%s)<%f)&&(%s>=%f&&%s<%f)&&(%s>=%f&&%s<%f)&&(fabs(%s)>=%f&&fabs(%s)<%f)&&(%s>=%f&&%s<%f)", VarName[0].Data(), rapBinsArr[0], VarName[0].Data(), rapBinsArr[rap_narr-1], VarName[1].Data(), CentBinsArr[0], VarName[1].Data(), CentBinsArr[Cent_narr-1], VarName[2].Data(), ptBinsArr[0], VarName[2].Data(), ptBinsArr[pt_narr-1], VarName[iVar].Data(), BinsArr[0], VarName[iVar].Data(), BinsArr[1], "dphi", TMath::Pi()*(double)idphi/(2*(double)ndphi), "dphi", TMath::Pi()*((double)idphi+1)/(2*(double)ndphi)));
 			reducedDS->SetName("reducedDS");
@@ -162,41 +160,21 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 			RooRealVar sigma3S_2("sigma3S_2", "sigma2 of 3S", 0.05, 0.02, 0.15);
 //}}}
 
-//alpha{{{
-			RooRealVar alpha1S_1("alpha1S_1", "alpha1 of 1S Crystal ball", 2., 0.7, 15.0);
-			RooRealVar alpha2S_1("alpha2S_1", "alpha1 of 2S Crystal ball", 2., 0.7, 15.0);
-			RooRealVar alpha3S_1("alpha3S_1", "alpha1 of 3S Crystal ball", 2., 0.7, 15.0);
-			RooRealVar alpha1S_2("alpha1S_2", "alpha2 of 1S Crystal ball", 2., 0.7, 15.0);
-			RooRealVar alpha2S_2("alpha2S_2", "alpha2 of 2S Crystal ball", 2., 0.7, 15.0);
-			RooRealVar alpha3S_2("alpha3S_2", "alpha2 of 3S Crystal ball", 2., 0.7, 15.0);
-//}}}
-
-//n{{{
-			RooRealVar n1S_1("n1S_1", "n1 of 1S Crystal ball", 2.0, 0.7, 15.0);
-			RooRealVar n2S_1("n2S_1", "n1 of 2S Crystal ball", 2.0, 0.7, 15.0);
-			RooRealVar n3S_1("n3S_1", "n1 of 3S Crystal ball", 2.0, 0.7, 15.0);
-			RooRealVar n1S_2("n1S_2", "n2 of 1S Crystal ball", 2.0, 0.7, 15.0);
-			RooRealVar n2S_2("n2S_2", "n2 of 2S Crystal ball", 2.0, 0.7, 15.0);
-			RooRealVar n3S_2("n3S_2", "n2 of 3S Crystal ball", 2.0, 0.7, 15.0);
-//}}}
-
-//fraction{{{
-			RooRealVar* frac1S = new RooRealVar("frac1S", "CB fraction of 1S", 0.5, 0, 1);
-			RooRealVar* frac2S = new RooRealVar("frac2S", "CB fraction of 2S", 0.5, 0, 1);
-			RooRealVar* frac3S = new RooRealVar("frac3S", "CB fraction of 3S", 0.5, 0, 1);
-//}}}
+			RooRealVar alpha("alpha", "alpha of Crystal ball", 2., 0.7, 15.0);
+			RooRealVar n("n", "n of Crystal ball", 2.0, 0.7, 15.0);
+			RooRealVar* frac = new RooRealVar("frac", "CB fraction", 0.5, 0, 1);
 
 //twoCB function{{{
-			RooCBShape* CB1S_1 = new RooCBShape("CB1S_1", "1S Crystal ball function1", *(ws->var("mass")), mean1S, sigma1S_1, alpha1S_1, n1S_1);
-			RooCBShape* CB2S_1 = new RooCBShape("CB2S_1", "2S Crystal ball function1", *(ws->var("mass")), mean2S, sigma2S_1, alpha2S_1, n2S_1);
-			RooCBShape* CB3S_1 = new RooCBShape("CB3S_1", "3S Crystal ball function1", *(ws->var("mass")), mean3S, sigma3S_1, alpha3S_1, n3S_1);
-			RooCBShape* CB1S_2 = new RooCBShape("CB1S_2", "1S Crystal ball function2", *(ws->var("mass")), mean1S, sigma1S_2, alpha1S_2, n1S_2);
-			RooCBShape* CB2S_2 = new RooCBShape("CB2S_2", "2S Crystal ball function2", *(ws->var("mass")), mean2S, sigma2S_2, alpha2S_2, n2S_2);
-			RooCBShape* CB3S_2 = new RooCBShape("CB3S_2", "3S Crystal ball function2", *(ws->var("mass")), mean3S, sigma3S_2, alpha3S_2, n3S_2);
+			RooCBShape* CB1S_1 = new RooCBShape("CB1S_1", "1S Crystal ball function1", *(ws->var("mass")), mean1S, sigma1S_1, alpha, n);
+			RooCBShape* CB2S_1 = new RooCBShape("CB2S_1", "2S Crystal ball function1", *(ws->var("mass")), mean2S, sigma2S_1, alpha, n);
+			RooCBShape* CB3S_1 = new RooCBShape("CB3S_1", "3S Crystal ball function1", *(ws->var("mass")), mean3S, sigma3S_1, alpha, n);
+			RooCBShape* CB1S_2 = new RooCBShape("CB1S_2", "1S Crystal ball function2", *(ws->var("mass")), mean1S, sigma1S_2, alpha, n);
+			RooCBShape* CB2S_2 = new RooCBShape("CB2S_2", "2S Crystal ball function2", *(ws->var("mass")), mean2S, sigma2S_2, alpha, n);
+			RooCBShape* CB3S_2 = new RooCBShape("CB3S_2", "3S Crystal ball function2", *(ws->var("mass")), mean3S, sigma3S_2, alpha, n);
 
-			RooAddPdf* twoCB1S = new RooAddPdf("twoCB1S", "Sum of 1S Crystal ball", RooArgList(*CB1S_1, *CB1S_2), RooArgList(*frac1S));
-			RooAddPdf* twoCB2S = new RooAddPdf("twoCB2S", "Sum of 2S Crystal ball", RooArgList(*CB2S_1, *CB2S_2), RooArgList(*frac2S));
-			RooAddPdf* twoCB3S = new RooAddPdf("twoCB3S", "Sum of 3S Crystal ball", RooArgList(*CB3S_1, *CB3S_2), RooArgList(*frac3S));
+			RooAddPdf* twoCB1S = new RooAddPdf("twoCB1S", "Sum of 1S Crystal ball", RooArgList(*CB1S_1, *CB1S_2), RooArgList(*frac));
+			RooAddPdf* twoCB2S = new RooAddPdf("twoCB2S", "Sum of 2S Crystal ball", RooArgList(*CB2S_1, *CB2S_2), RooArgList(*frac));
+			RooAddPdf* twoCB3S = new RooAddPdf("twoCB3S", "Sum of 3S Crystal ball", RooArgList(*CB3S_1, *CB3S_2), RooArgList(*frac));
 //}}}
 
 //}}}
@@ -219,24 +197,15 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 //}}}
 
 //Set Parameters{{{
-			sigma1S_1.setVal(sig11); sigma1S_1.setConstant(sig11);
-			sigma1S_2.setVal(sig12); sigma1S_2.setConstant(sig12);
-			sigma2S_1.setVal(sig21); sigma2S_1.setConstant(sig21);
-			sigma2S_2.setVal(sig22); sigma2S_2.setConstant(sig22);
-			sigma3S_1.setVal(sig31); sigma3S_1.setConstant(sig31);
-			sigma3S_2.setVal(sig32); sigma3S_2.setConstant(sig32);
-			alpha1S_1.setVal(alp11); alpha1S_1.setConstant(alp11);
-			alpha1S_2.setVal(alp12); alpha1S_2.setConstant(alp12);
-			alpha2S_1.setVal(alp21); alpha2S_1.setConstant(alp21);
-			alpha2S_2.setVal(alp22); alpha2S_2.setConstant(alp22);
-			alpha3S_1.setVal(alp31); alpha3S_1.setConstant(alp31);
-			alpha3S_2.setVal(alp32); alpha3S_2.setConstant(alp32);
-			n1S_1.setVal(n11); n1S_1.setConstant(n11);
-			n1S_2.setVal(n12); n1S_2.setConstant(n12);
-			n2S_1.setVal(n21); n2S_1.setConstant(n21);
-			n2S_2.setVal(n22); n2S_2.setConstant(n22);
-			n3S_1.setVal(n31); n3S_1.setConstant(n31);
-			n3S_2.setVal(n32); n3S_2.setConstant(n32);
+			sigma1S_1.setVal(sig11); sigma1S_1.setConstant();
+			sigma1S_2.setVal(sig12); sigma1S_2.setConstant();
+			sigma2S_1.setVal(sig21); sigma2S_1.setConstant();
+			sigma2S_2.setVal(sig22); sigma2S_2.setConstant();
+			sigma3S_1.setVal(sig31); sigma3S_1.setConstant();
+			sigma3S_2.setVal(sig32); sigma3S_2.setConstant();
+			alpha.setVal(alp); alpha.setConstant();
+			n.setVal(N); n.setConstant();
+			frac->setVal(Frac); frac->setConstant();
 			Erfmean.setVal(erfm); Erfmean.setConstant(erfm);
 			Erfsigma.setVal(erfsig); Erfsigma.setConstant(erfsig);
 			Erfp0.setVal(erfp0); Erfp0.setConstant(erfp0);
@@ -322,6 +291,7 @@ void GetYield(const Int_t iVar = 1, const Int_t narr = 3, Int_t ndphi = 3, TStri
 //}}}
 
 			c1->SaveAs(Form("MassDistribution_%s_%dbin_%dth_%dndphi_%ddphi_%s.pdf", VarName[iVar].Data(), narr-1, iarr, ndphi, idphi, version.Data()));
+			fout->cd();
 			massPlot->Write();
 			hYield->Write();
 		}

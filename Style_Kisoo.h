@@ -18,9 +18,22 @@
 #include <RooPlot.h>
 //}}}
 
-const Int_t color[] = {1, 2, 4, 6, 3, 94, 5, 7};
-const Int_t marker[] = {20, 21, 29, 33, 34, 22, 23, 28};
-const Int_t hfill[]  = {2004, 2011, 2022, 2020, 2025, 3006, 3007, 2016};
+const Int_t colorArr[] = {1, 2, 4, 6, 3, 94, 5, 7};
+const Int_t markerArr[] = {20, 21, 29, 33, 34, 22, 23, 28};
+const Int_t hfillArr[]  = {2004, 2011, 2022, 2020, 2025, 3006, 3007, 2016};
+
+void SetStyle()
+{
+//{{{
+	gStyle->SetOptFit(0);
+	gStyle->SetTitleFont(62,"xyz");
+	gStyle->SetLabelFont(62,"xyz");
+	gStyle->SetPadTopMargin(0.1);
+	gStyle->SetPadBottomMargin(0.13);
+	gStyle->SetPadLeftMargin(0.15);
+	gStyle->SetPadRightMargin(0.05);
+//}}}
+}
 
 void FormLegend(TLegend* leg, Double_t size)
 {
@@ -48,30 +61,7 @@ void FormTH1(TH1* h1, Int_t color)
 	h1->Sumw2();
 	h1->GetXaxis()->CenterTitle();
 	h1->GetYaxis()->CenterTitle();
-	h1->GetXaxis()->SetTitleOffset(1.1);
-	h1->GetYaxis()->SetTitleOffset(1.1);
-	h1->GetXaxis()->SetTitleSize(0.045);
-	h1->GetYaxis()->SetTitleSize(0.045);
-	h1->GetXaxis()->SetTitleFont(42);
-	h1->GetYaxis()->SetTitleFont(42);
-	h1->GetXaxis()->SetLabelOffset(0.007);
-	h1->GetYaxis()->SetLabelOffset(0.007);
-	h1->GetXaxis()->SetLabelSize(0.04);
-	h1->GetYaxis()->SetLabelSize(0.04);
-	h1->GetXaxis()->SetLabelFont(42);
-	h1->GetYaxis()->SetLabelFont(42);
-	h1->SetLineColor(color);
-	h1->SetLineWidth(2);
-//}}}
-}
-
-void FormTH1Marker(TH1* h1, Int_t color, Int_t marker, Double_t size)
-{
-//{{{
-	h1->Sumw2();
-	h1->GetXaxis()->CenterTitle();
-	h1->GetYaxis()->CenterTitle();
-	h1->GetXaxis()->SetTitleOffset(1.3);
+	h1->GetXaxis()->SetTitleOffset(1.05);
 	h1->GetYaxis()->SetTitleOffset(1.3);
 	h1->GetXaxis()->SetTitleSize(0.045);
 	h1->GetYaxis()->SetTitleSize(0.045);
@@ -83,22 +73,19 @@ void FormTH1Marker(TH1* h1, Int_t color, Int_t marker, Double_t size)
 	h1->GetYaxis()->SetLabelSize(0.04);
 	h1->GetXaxis()->SetLabelFont(42);
 	h1->GetYaxis()->SetLabelFont(42);
-	h1->SetLineColor(color);
+	h1->SetLineColor(colorArr[color]);
 	h1->SetLineWidth(2);
-	h1->SetMarkerStyle(marker);
-	h1->SetMarkerColor(color);
-	h1->SetMarkerSize(size);
 //}}}
 }
 
-void FormTH1Fill(TH1* h1, Int_t color, Int_t hfill)
+void FormTH1Marker(TH1* h1, Int_t color, Int_t marker, Double_t size)
 {
 //{{{
 	h1->Sumw2();
 	h1->GetXaxis()->CenterTitle();
 	h1->GetYaxis()->CenterTitle();
-	h1->GetXaxis()->SetTitleOffset(1.1);
-	h1->GetYaxis()->SetTitleOffset(1.1);
+	h1->GetXaxis()->SetTitleOffset(1.05);
+	h1->GetYaxis()->SetTitleOffset(1.3);
 	h1->GetXaxis()->SetTitleSize(0.045);
 	h1->GetYaxis()->SetTitleSize(0.045);
 	h1->GetXaxis()->SetTitleFont(42);
@@ -109,10 +96,36 @@ void FormTH1Fill(TH1* h1, Int_t color, Int_t hfill)
 	h1->GetYaxis()->SetLabelSize(0.04);
 	h1->GetXaxis()->SetLabelFont(42);
 	h1->GetYaxis()->SetLabelFont(42);
-	h1->SetLineColor(color);
+	h1->SetLineColor(colorArr[color]);
 	h1->SetLineWidth(2);
-	h1->SetFillColor(color);
-	h1->SetFillStyle(hfill);
+	h1->SetMarkerStyle(markerArr[marker]);
+	h1->SetMarkerColor(colorArr[color]);
+	h1->SetMarkerSize(size);
+//}}}
+}
+
+void FormTH1Fill(TH1* h1, Int_t color, Int_t hfill)
+{
+//{{{
+	h1->Sumw2();
+	h1->GetXaxis()->CenterTitle();
+	h1->GetYaxis()->CenterTitle();
+	h1->GetXaxis()->SetTitleOffset(1.05);
+	h1->GetYaxis()->SetTitleOffset(1.3);
+	h1->GetXaxis()->SetTitleSize(0.045);
+	h1->GetYaxis()->SetTitleSize(0.045);
+	h1->GetXaxis()->SetTitleFont(42);
+	h1->GetYaxis()->SetTitleFont(42);
+	h1->GetXaxis()->SetLabelOffset(0.007);
+	h1->GetYaxis()->SetLabelOffset(0.007);
+	h1->GetXaxis()->SetLabelSize(0.04);
+	h1->GetYaxis()->SetLabelSize(0.04);
+	h1->GetXaxis()->SetLabelFont(42);
+	h1->GetYaxis()->SetLabelFont(42);
+	h1->SetLineColor(colorArr[color]);
+	h1->SetLineWidth(2);
+	h1->SetFillColor(colorArr[color]);
+	h1->SetFillStyle(hfillArr[hfill]);
 //}}}
 }
 
@@ -122,8 +135,8 @@ void FormTH2(TH1* h1)
 	h1->Sumw2();
 	h1->GetXaxis()->CenterTitle();
 	h1->GetYaxis()->CenterTitle();
-	h1->GetXaxis()->SetTitleOffset(1.1);
-	h1->GetYaxis()->SetTitleOffset(1.1);
+	h1->GetXaxis()->SetTitleOffset(1.05);
+	h1->GetYaxis()->SetTitleOffset(1.3);
 	h1->GetXaxis()->SetTitleSize(0.045);
 	h1->GetYaxis()->SetTitleSize(0.045);
 	h1->GetXaxis()->SetTitleFont(42);
@@ -157,12 +170,12 @@ void RooMaxRange(RooPlot* h1, RooPlot* h2, Double_t weight = 1.2, Double_t min =
 //}}}
 }
 
-void FormGraph(TGraph* g1, Int_t color, Int_t style, Int_t size)
+void FormGraph(TGraph* g1, Int_t color, Int_t marker, Int_t size)
 {
 //{{{
 	g1->GetXaxis()->CenterTitle();
 	g1->GetYaxis()->CenterTitle();
-	g1->GetXaxis()->SetTitleOffset(1.3);
+	g1->GetXaxis()->SetTitleOffset(1.05);
 	g1->GetYaxis()->SetTitleOffset(1.3);
 	g1->GetXaxis()->SetTitleSize(0.045);
 	g1->GetYaxis()->SetTitleSize(0.045);
@@ -174,9 +187,9 @@ void FormGraph(TGraph* g1, Int_t color, Int_t style, Int_t size)
 	g1->GetYaxis()->SetLabelSize(0.04);
 	g1->GetXaxis()->SetLabelFont(42);
 	g1->GetYaxis()->SetLabelFont(42);
-	g1->SetLineColor(color);
-	g1->SetMarkerStyle(style);
-	g1->SetMarkerColor(color);
+	g1->SetLineColor(colorArr[color]);
+	g1->SetMarkerStyle(markerArr[marker]);
+	g1->SetMarkerColor(colorArr[color]);
 	g1->SetMarkerSize(size);
 //}}}
 }

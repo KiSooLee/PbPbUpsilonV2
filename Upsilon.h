@@ -5,13 +5,15 @@
 //}}}
 
 //Basic info{{{
-//Double_t rapBinsArr[] = {-2.4, 0.0, 2.4};
-//Double_t CentBinsArr[] = {20, 40, 60};
-//Double_t ptBinsArr[] = {0, 6, 30};
-Double_t rapBinsArr[] = {-2.4, 2.4};
-Double_t CentBinsArr[] = {40, 120};
+Double_t rapBinsArr[] = {0, 1.2, 2.4};
+//Double_t CentBinsArr[] = {20, 120};
+Double_t CentBinsArr[] = {20, 40, 60, 120};
+Double_t CentBinsArr2[] = {10, 20, 30, 60};
+//Double_t ptBinsArr[] = {0, 6, 15, 30};
 Double_t ptBinsArr[] = {0, 30};
-const Int_t narr = sizeof(rapBinsArr)/sizeof(double);
+const Int_t rap_narr = sizeof(rapBinsArr)/sizeof(double);
+const Int_t Cent_narr = sizeof(CentBinsArr)/sizeof(double);
+const Int_t pt_narr = sizeof(ptBinsArr)/sizeof(double);
 
 TString VarName[3] = {"y", "Centrality", "pt"};
 
