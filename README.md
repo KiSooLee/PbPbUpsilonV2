@@ -13,19 +13,21 @@
 4. To determine fitting function skimmed MC is used.
 	Fitting function study is done by SkimmedFiles/SignalFunction/doMCfit.sh
 	We choose twoCB(Sum of two Crystal Ball function).
+	For the case of sum of two function we assume that resolution is defferent in the different rapidity range. So the sigmas of two function are different. But alpha and n are same for two function because they are related to the decay mode of Upsilon.
 
 5. In the real event there are background. So background study is done with data sample.
 	With twoCB signal function background functions study is done by SkimmedFiles/BackgroundFunction/doBkgfit.sh
 	We choose Error function.
 
 6. The initial parameters for the fitting is obtained from two process. First, we fit MC mass distribution of each binning of variable to get signal fitting parameters by GetYield/GetMCParameters.C.
-	Second, fit data of each variable bin by setting the initial parameters and range of +- 20 % from the initial parameters with recorded values by GetYield/GetMCParameters.C. This process is execuded by GetYield/GetParameters.C.
+	Second, fit data of each variable bin by setting the initial parameters and range of +- 20 % from the initial parameters with recorded values by GetYield/GetMCParameters.C. This process is execuded by GetYield/GetParameters.C. The range of parameter could be modified by hand to obtain proper fit.
 	Both macros are executed by GetYield/doGetYield.sh
 
 7. With twoCB and Erf mass of Upsilon 1S, 2S, 3S are fitted by GetYield/doGetYield.sh for each bin.
+	The alpha, n, fraction of two CB, ratio of sigma of two CB are same among states because the decay mode and rapidity distribution of Upsilon are same among all states.
+	And the sigma is increased proportional to its mass.
 	doGetYield.sh runs the GetYield.C macro.
-	All the parameters are fixed. Parameter values are obtained from GetYield/GetParameters.C
-	One should adjust these values for detail fitting of each bins.
+	Parameter values are obtained from GetYield/GetParameters.C. All the parameters are fixed because we don't expect mass distribution to be different related to its dphi value.
 
 8. dN/dphi distribution is fitted to calculate v2 value by dNdphi/dodphi.sh
 
