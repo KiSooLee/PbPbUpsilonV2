@@ -16,6 +16,24 @@ void DrawV2(Int_t iVar = 0, const Int_t narr = 3, TString version = "v1")
 	TFile* fout = new TFile(Form("V2_distribution_%s_%s.root", VarName[iVar].Data(), version.Data()), "RECREATE");
 
 	SetStyle();
+//line range{{{
+	Double_t lmin, lmax;
+	if(iVar == 0)
+	{
+		lmin = rapBinsArr[0];
+		lmax = rapBinsArr[narr-1];
+	}
+	else if(iVar == 1)
+	{
+		lmin = CentBinsArr2[0];
+		lmax = CentBinsArr2[narr-1];
+	}
+	else
+	{
+		lmin = ptBinsArr[0];
+		lmax = ptBinsArr[narr-1];
+	}
+//}}}
 
 //Define canvas and histogram{{{
 	TCanvas* c1[3];
@@ -50,11 +68,11 @@ void DrawV2(Int_t iVar = 0, const Int_t narr = 3, TString version = "v1")
 	for(Int_t iS = 0; iS < 3; iS++)
 	{
 		c1[iS]->cd();
-		hV2[iS]->GetYaxis()->SetRangeUser(-0.2, 0.4);
+		hV2[iS]->GetYaxis()->SetRangeUser(-0.2, 0.3);
 		hV2[iS]->Draw();
 		lt->DrawLatex(0.15, 0.935, "CMS Preliminary");
 		lt->DrawLatex(0.52, 0.935, "PbPb #sqrt{s_{NN}} = 5.02 TeV");
-		if(iVar == 0) lt->DrawLatex(0.56, 0.82,"Cent. 0-60 %");
+		if(iVar == 0) lt->DrawLatex(0.56, 0.82,"Cent. 10-60 %");
 		else if(iVar == 1) lt->DrawLatex(0.56, 0.82,"|y|<2.4");
 		else
 		{
@@ -62,6 +80,7 @@ void DrawV2(Int_t iVar = 0, const Int_t narr = 3, TString version = "v1")
 			lt->DrawLatex(0.56, 0.76,"|y|<2.4");
 		}
 		lt->DrawLatex(0.18, 0.82, Form("#Upsilon (%dS)", iS+1));
+		SetLine(2, lmin, 0.0, lmax, 0.0, 0, 2);
 		c1[iS]->SaveAs(Form("V2_distribution_%s_%dS_%s.pdf", VarName[iVar].Data(), iS+1, version.Data()));
 		hV2[iS]->Write();
 	}
